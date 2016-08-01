@@ -21,8 +21,7 @@ module.exports = {
               plugins: ['transform-es2015-modules-commonjs', 'transform-object-rest-spread'] 
             },
             include: path.join(__dirname, 'demo')
-        },
-        { test: /\.css$/, loader: 'style!css' }
+        }
       ]
   },
   plugins: [
