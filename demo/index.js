@@ -88,7 +88,8 @@ function itIs() {
     this.state = {
       selected: 'docco',
       style: require('../dist/styles/docco').default,
-      code: initialCodeString
+      code: initialCodeString,
+      showLineNumbers: false
     }
   }
   render() {
@@ -101,20 +102,25 @@ function itIs() {
       color: 'aliceblue'
     }
 
-    const dropDown = (
-      <select 
-        value={this.state.selected} 
-        onChange={(e) => this.setState({style: require(`../dist/styles/${e.target.value}`).default, selected: e.target.value})}
-      >
-        {availableStyles.map(s => <option key={s} value={s}>{s}</option>)}
-      </select>
-    );
-
     return (
       <div>
         <h1 style={h1Style}>React Syntax Highlighter</h1>
         <h2 style={h2}>Change Style</h2>
-        {dropDown}
+        <select 
+          value={this.state.selected} 
+          onChange={(e) => this.setState({style: require(`../dist/styles/${e.target.value}`).default, selected: e.target.value})}
+        >
+          {availableStyles.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <div style={{paddingTop: '10px', fontSize: 16, color: 'aliceblue'}}>
+          <label htmlFor="showLineNumbers">Show Line Numbers:</label>
+          <input 
+            type="checkbox" 
+            checked={this.state.showLineNumbers} 
+            onChange={() => this.setState({ showLineNumbers: !this.state.showLineNumbers })}
+            id="showLineNumbers"
+          />
+        </div>
         <div style={{paddingTop: 20}}>
           <textarea 
             style={{float: 'left', marginTop: 11}} 
@@ -124,7 +130,7 @@ function itIs() {
             onChange={(e) => this.setState({code: e.target.value})}
           />
           <div style={{float: 'right', width: '50%'}}>
-            <SyntaxHighlighter language='javascript' style={this.state.style}>
+            <SyntaxHighlighter language='javascript' style={this.state.style} showLineNumbers={this.state.showLineNumbers}>
               {this.state.code}
             </SyntaxHighlighter>
           </div>
