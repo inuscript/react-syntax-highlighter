@@ -76,10 +76,10 @@
 	
 	    var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
 	
-	    var initialCodeString = 'const woah = fun => fun + 1;\nconst dude = woah(2) + 3;\nfunction thisIsAFunction() {\n  return [1,2,3].map(n => n + 1).filter(n !== 3);\n}\nconsole.log(\'making up fake code is really hard\');\n\nfunction itIs() {\n  return \'no seriously really it is\';\n}\n  ';
+	    var initialCodeString = 'function createStyleObject(classNames, style) {\n  return classNames.reduce((styleObject, className) => {\n    return {...styleObject, ...style[className]};\n  }, {});\n}\n\nfunction createClassNameString(classNames) {\n  return classNames.join(\' \');\n}\n\nfunction createChildren(style, useInlineStyles) {\n  let childrenCount = 0;\n  return children => {\n    childrenCount += 1;\n    return children.map((child, i) => createElement({\n      node: child,\n      style,\n      useInlineStyles,\n      key:`code-segment-${childrenCount}-${i}`\n    }));\n  }\n}\n\nfunction createElement({ node, style, useInlineStyles, key }) {\n  const { properties, type, tagName, value } = node;\n  if (type === "text") {\n    return value;\n  } else if (tagName) {\n    const TagName = tagName;\n    const childrenCreator = createChildren(style, useInlineStyles);\n    const props = (\n      useInlineStyles\n      ?\n      { style: createStyleObject(properties.className, style) }\n      :\n      { className: createClassNameString(properties.className) }\n    );\n    const children = childrenCreator(node.children);\n    return <TagName key={key} {...props}>{children}</TagName>;\n  }\n}\n  ';
 	    _this.state = {
 	      selected: 'docco',
-	      style: __webpack_require__(335).default,
+	      style: __webpack_require__(408).default,
 	      code: initialCodeString,
 	      showLineNumbers: false
 	    };

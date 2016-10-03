@@ -74,20 +74,51 @@ const availableStyles = [
 class Component extends React.Component {
   constructor() {
     super();
-    const initialCodeString = `const woah = fun => fun + 1;
-const dude = woah(2) + 3;
-function thisIsAFunction() {
-  return [1,2,3].map(n => n + 1).filter(n !== 3);
+    const initialCodeString = `function createStyleObject(classNames, style) {
+  return classNames.reduce((styleObject, className) => {
+    return {...styleObject, ...style[className]};
+  }, {});
 }
-console.log('making up fake code is really hard');
 
-function itIs() {
-  return 'no seriously really it is';
+function createClassNameString(classNames) {
+  return classNames.join(' ');
+}
+
+function createChildren(style, useInlineStyles) {
+  let childrenCount = 0;
+  return children => {
+    childrenCount += 1;
+    return children.map((child, i) => createElement({
+      node: child,
+      style,
+      useInlineStyles,
+      key:\`code-segment-$\{childrenCount}-$\{i}\`
+    }));
+  }
+}
+
+function createElement({ node, style, useInlineStyles, key }) {
+  const { properties, type, tagName, value } = node;
+  if (type === "text") {
+    return value;
+  } else if (tagName) {
+    const TagName = tagName;
+    const childrenCreator = createChildren(style, useInlineStyles);
+    const props = (
+      useInlineStyles
+      ?
+      { style: createStyleObject(properties.className, style) }
+      :
+      { className: createClassNameString(properties.className) }
+    );
+    const children = childrenCreator(node.children);
+    return <TagName key={key} {...props}>{children}</TagName>;
+  }
 }
   `;
     this.state = {
       selected: 'docco',
-      style: require('../dist/styles/docco').default,
+      style: require('../dist/styles/tomorrow-night-eighties').default,
       code: initialCodeString,
       showLineNumbers: false
     }
