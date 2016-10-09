@@ -117,7 +117,7 @@ function createElement({ node, style, useInlineStyles, key }) {
 }
   `;
     this.state = {
-      selected: 'docco',
+      selected: 'tomorrow-night-eighties',
       style: require('../dist/styles/tomorrow-night-eighties').default,
       code: initialCodeString,
       showLineNumbers: false
@@ -161,7 +161,7 @@ function createElement({ node, style, useInlineStyles, key }) {
             onChange={(e) => this.setState({code: e.target.value})}
           />
           <div style={{float: 'right', width: '50%'}}>
-            <SyntaxHighlighter language='javascript' style={this.state.style} showLineNumbers={this.state.showLineNumbers}>
+            <SyntaxHighlighter style={this.state.style} showLineNumbers={this.state.showLineNumbers}>
               {this.state.code}
             </SyntaxHighlighter>
           </div>
