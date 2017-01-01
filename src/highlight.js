@@ -34,9 +34,9 @@ function createElement({ node, style, useInlineStyles, key }) {
     const props = (
       useInlineStyles
       ?
-      { style: createStyleObject(properties.className, style) }
+      { style: createStyleObject(properties.className || [], style) }
       :
-      { className: createClassNameString(properties.className) }
+      { className: createClassNameString(properties.className || []) }
     );
     const children = childrenCreator(node.children);
     return <TagName key={key} {...props}>{children}</TagName>;
@@ -99,7 +99,28 @@ export default function (lowlight, defaultStyle) {
       :
       Object.assign({}, rest, { className: 'hljs'})
     );
-
+    const childrenWithLineBreakIndexes = codeTree.value.reduce((lineBreakIndexes, node, i) => {
+      if (node.type === 'text' && node.value.includes('\n')) {
+        lineBreakIndexes.push(i);
+      }
+      else if(node.children) {
+        node.children.forEach(childNode => {
+          if (childNode.type === 'text' && childNode.value.includes('\n')) {
+            lineBreakIndexes.push(i);
+          }
+        })
+      }
+      return lineBreakIndexes;
+    }, []);
+    const newTree = childrenWithLineBreakIndexes.map((lineBreakIndex, i) => ({
+      type: 'element',
+      tagName: 'span',
+      properties: {},
+      children: codeTree.value.slice(
+        childrenWithLineBreakIndexes[i - 1] && childrenWithLineBreakIndexes[i - 1] + 1 || 0, 
+        lineBreakIndex + 1
+      )
+    }));
     const lineNumbers = (
       showLineNumbers
       ?
@@ -116,7 +137,7 @@ export default function (lowlight, defaultStyle) {
       <pre {...preProps}>
         {lineNumbers}
         <code {...codeTagProps}>
-          {codeTree.value.map((node, i) => createElement({
+          {newTree.map((node, i) => createElement({
             node,
             style,
             useInlineStyles,
